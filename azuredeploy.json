@@ -23,6 +23,13 @@
         "description": "Number of Email Analytics VMs to deploy"
       }
     },
+    "MongoVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of Mongo VMs to deploy"
+      }
+    },
     "VNetName": {
       "type": "string",
       "defaultValue": "vnet01",
@@ -68,6 +75,15 @@
         "prefix": "email",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('EmailVMInstance'))]",
+        "lbtype": "int",
+        "location": "[parameters('Location')]",
+        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+      },
+      {
+        "condition": "[greater(parameters('MongoVMInstance'),0)]",
+        "prefix": "mongo",
+        "size": "standard_ds2_v2",
+        "count": "[if(equals(parameters('MongoVMInstance'), 0), 1, parameters('MongoVMInstance'))]",
         "lbtype": "int",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"

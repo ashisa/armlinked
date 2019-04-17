@@ -80,7 +80,7 @@
       }
     },
     {
-      "condition": "[parameters('LBCondition')]",
+      "condition": "[if(equals(parameters('Condition'), parameters('LBCondition')), bool('true'), bool('false'))]",
       "apiVersion": "2015-05-01-preview",
       "name": "[variables('LBName')]",
       "type": "Microsoft.Network/loadBalancers",
