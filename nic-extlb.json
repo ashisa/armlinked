@@ -25,6 +25,12 @@
       "metadata": {
         "description": "Reference to the subnet"
       }
+    },
+    "Location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the load balancer"
+      }
     }
   },
   "variables": {
@@ -40,7 +46,7 @@
       "apiVersion": "2015-05-01-preview",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('Name'), '-pip')]",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('Location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
       }
@@ -50,7 +56,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('Condition'), 'nic', copyindex(1))]",
       "apiVersion": "2016-03-30",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('Location')]",
       "copy": {
         "name": "nicLoop",
         "count": "[parameters('Count')]"
@@ -82,7 +88,7 @@
       "apiVersion": "2015-05-01-preview",
       "name": "[concat(parameters('Name'),'lb')]",
       "type": "Microsoft.Network/loadBalancers",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('Location')]",
       "dependsOn": [
         "[variables('LBPIPID')]"
       ],
