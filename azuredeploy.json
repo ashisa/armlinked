@@ -1,0 +1,256 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "WebVMInstance": {
+      "type": "int",
+      "defaultValue": 3,
+      "metadata": {
+        "description": "Number of Web VMs to deploy"
+      }
+    },
+    "ApiSrvVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of ApiSrv VMs to deploy"
+      }
+    },
+    "EmailVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of Email Analytics VMs to deploy"
+      }
+    },
+    "MongoVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of Mongo VMs to deploy"
+      }
+    },
+    "GraphVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of Graph VMs to deploy"
+      }
+    },
+    "MySQLVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of VMs to deploy"
+      }
+    },
+    "KafkaVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of Kafka VMs to deploy"
+      }
+    },
+    "ESVMInstance": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of Elastic Search VMs to deploy"
+      }
+    },
+    "VNetName": {
+      "type": "string",
+      "defaultValue": "vnet01",
+      "metadata": {
+        "description": "Name of the VNet"
+      }
+    },
+    "Location": {
+      "type": "string",
+      "defaultValue": "southindia",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
+  },
+  "variables": {
+    "virtualNetworkName": "[parameters('VNetName')]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnet1Name": "Subnet-1",
+    "subnet1Prefix": "10.0.0.0/24",
+    "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),variables('subnet1Name'))]",
+    "VMProperties": [
+      {
+        "web": {
+          "condition": "[greater(parameters('WebVMInstance'),0)]",
+          "prefix": "web",
+          "size": "standard_ds2_v2",
+          "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+          "lbtype": "ext",
+          "location": "[parameters('Location')]",
+          "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        },
+        "apisrv": {
+          "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
+          "prefix": "web",
+          "size": "standard_ds2_v2",
+          "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
+          "lbtype": "ext",
+          "location": "[parameters('Location')]",
+          "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        },
+        "mongo": {
+          "condition": "[greater(parameters('WebVMInstance'),0)]",
+          "prefix": "web",
+          "size": "standard_ds2_v2",
+          "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+          "lbtype": "ext",
+          "location": "[parameters('Location')]",
+          "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        }
+      }
+    ],
+    "avSet": [
+      {
+        "Name": "webavset",
+        "Condition": "[greater(parameters('WebVMInstance'),0)]"
+      },
+      {
+        "Name": "apisrvavset",
+        "Condition": "[greater(parameters('ApiSrvVMInstance'),0)]"
+      },
+      {
+        "Name": "emailavset",
+        "Condition": "[greater(parameters('EmailVMInstance'),0)]"
+      },
+      {
+        "Name": "mongoavset",
+        "Condition": "[greater(parameters('MongoVMInstance'),0)]"
+      },
+      {
+        "Name": "graphavset",
+        "Condition": "[greater(parameters('GraphVMInstance'),0)]"
+      },
+      {
+        "Name": "kafkaavset",
+        "Condition": "[greater(parameters('KafkaVMInstance'),0)]"
+      },
+      {
+        "Name": "mysqlavset",
+        "Condition": "[greater(parameters('MySQLVMInstance'),0)]"
+      },
+      {
+        "Name": "esavset",
+        "Condition": "[greater(parameters('ESVMInstance'),0)]"
+      }
+    ],
+    "webVMProperty": {
+      "Condition": "[greater(parameters('WebVMInstance'),0)]",
+      "VMPrefix": "webvm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2",
+      "LBName": "weblb",
+      "LBType": "ext",
+      "LBID": "[resourceId('Microsoft.Network/loadBalancers', 'weblb')]",
+      "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', 'weblb'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+      "LBPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', 'weblb'),'/backendAddressPools/BackendPool1')]",
+      "LBProbeID": "[concat(resourceId('Microsoft.Network/loadBalancers', 'weblb'),'/probes/tcpProbe')]",
+      "LBIPType": "Dynamic",
+      "LBPIPID": "[resourceId('Microsoft.Network/publicIPAddresses', 'weblb-pip')]"
+    },
+    "apisrvVMProperty": {
+      "Condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
+      "VMPrefix": "apisrvvm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    },
+    "emailVMProperty": {
+      "Condition": "[greater(parameters('EmailVMInstance'),0)]",
+      "VMPrefix": "emailvm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    },
+    "mongoVMProperty": {
+      "Condition": "[greater(parameters('MongoVMInstance'),0)]",
+      "VMPrefix": "mongovm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('MongoVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    },
+    "graphVMProperty": {
+      "Condition": "[greater(parameters('GraphVMInstance'),0)]",
+      "VMPrefix": "graphvm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('GraphVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    },
+    "mysqlVMProperty": {
+      "Condition": "[greater(parameters('MySQLVMInstance'),0)]",
+      "VMPrefix": "mysqlvm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('MySQLVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    },
+    "kafkaVMProperty": {
+      "Condition": "[greater(parameters('KafkaVMInstance'),0)]",
+      "VMPrefix": "kafkavm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('KafkaVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    },
+    "esVMProperty": {
+      "Condition": "[greater(parameters('ESVMInstance'),0)]",
+      "VMPrefix": "esvm",
+      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
+      "Count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+      "Size": "Standard_D2_V2"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[parameters('Location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet1Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "avset",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().templateLink.uri, 'avset.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "Condition": { "value": "[variables('VMProperties')[copyIndex()].condition]" },
+          "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
+          "Location": { "value": "[variables('VMProperties')[copyIndex()].location]" }
+        },
+        "copy": {
+          "name": "avsetloop",
+          "count": "[length(variables('VMProperties'))]"
+        }
+      }
+    }
+  ]
+}
