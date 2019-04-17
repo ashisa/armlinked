@@ -43,6 +43,16 @@
   "resources": [
     {
       "condition": "[parameters('Condition')]",
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(parameters('Name'), '-pip')]",
+      "location": "[parameters('Location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "condition": "[parameters('Condition')]",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('Name'), 'nic', copyindex(1))]",
       "apiVersion": "2016-03-30",
@@ -76,7 +86,7 @@
     {
       "condition": "[parameters('Condition')]",
       "apiVersion": "2015-05-01-preview",
-      "name": "[concat(parameters('Name'),'intlb')]",
+      "name": "[concat(parameters('Name'),'lb')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('Location')]",
       "dependsOn": [
@@ -87,6 +97,9 @@
           {
             "name": "LoadBalancerFrontEnd",
             "properties": {
+              "subnet": {
+                "id": "[parameters('subnet1Ref')]"
+              },
               "privateIPAllocationMethod": "Dynamic"
             }
           }
