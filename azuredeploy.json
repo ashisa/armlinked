@@ -4,28 +4,28 @@
   "parameters": {
     "WebVMInstance": {
       "type": "int",
-      "defaultValue": 3,
+      "defaultValue": 2,
       "metadata": {
         "description": "Number of Web VMs to deploy"
       }
     },
     "ApiSrvVMInstance": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 2,
       "metadata": {
         "description": "Number of ApiSrv VMs to deploy"
       }
     },
     "EmailVMInstance": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 3,
       "metadata": {
         "description": "Number of Email Analytics VMs to deploy"
       }
     },
     "MongoVMInstance": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "metadata": {
         "description": "Number of Mongo VMs to deploy"
       }
@@ -91,7 +91,7 @@
       },
       {
         "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
-        "prefix": "web",
+        "prefix": "apisrv",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
         "lbtype": "ext",
@@ -99,10 +99,10 @@
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       },
       {
-        "condition": "[greater(parameters('WebVMInstance'),0)]",
-        "prefix": "web",
+        "condition": "[greater(parameters('EmailVMInstance'),0)]",
+        "prefix": "email",
         "size": "standard_ds2_v2",
-        "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+        "count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('EmailVMInstance'))]",
         "lbtype": "ext",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
@@ -232,7 +232,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "avset",
+      "name": "[variables('VMProperties')[copyIndex()].prefix]",
       "copy": {
         "name": "avsetloop",
         "count": "[length(variables('VMProperties'))]"
@@ -245,7 +245,7 @@
         },
         "parameters": {
           "Condition": { "value": "[variables('VMProperties')[copyIndex()].condition]" },
-          "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
+          "Name": { "value": "[concat(variables('VMProperties')[copyIndex()].prefix, 'avset')]" },
           "Location": { "value": "[variables('VMProperties')[copyIndex()].location]" }
         }
       }
