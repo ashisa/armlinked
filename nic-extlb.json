@@ -34,11 +34,12 @@
     }
   },
   "variables": {
-    "LBID": "[resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb'))]",
+    "LBName": "concat(parameters('Name'),'lb')",
+    "LBID": "[resourceId('Microsoft.Network/loadBalancers', variables('LBName'))]",
     "LBPIPID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('Name'), '-pip'))]",
-    "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
-    "LBPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb')),'/backendAddressPools/BackendPool1')]",
-    "LBProbeID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb')),'/probes/tcpProbe')]"
+    "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+    "LBPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/backendAddressPools/BackendPool1')]",
+    "LBProbeID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/probes/tcpProbe')]"
   },
   "resources": [
     {
@@ -62,7 +63,7 @@
         "count": "[parameters('Count')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', parameters('Name'), 'lb')]"
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -86,7 +87,7 @@
     {
       "condition": "[parameters('Condition')]",
       "apiVersion": "2015-05-01-preview",
-      "name": "[concat(parameters('Name'),'lb')]",
+      "name": "[variables('LBName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('Location')]",
       "dependsOn": [
