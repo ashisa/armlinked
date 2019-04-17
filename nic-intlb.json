@@ -86,7 +86,6 @@
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('Location')]",
       "dependsOn": [
-        "[variables('LBPIPID')]"
       ],
       "properties": {
         "frontendIPConfigurations": [
