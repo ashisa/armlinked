@@ -132,7 +132,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "Condition": { "value": "[if(equals(variables('VMProperties')[copyIndex()].lbtype, 'none'), bool('false'), bool('true'))]" },
+          "Condition": { "value": "[variables('VMProperties')[copyIndex()].condition]" },
+          "LBCondition": { "value": "[if(equals(variables('VMProperties')[copyIndex()].lbtype, 'none'), bool('false'), bool('true'))]" },
           "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
           "Count": { "value": "[variables('VMProperties')[copyIndex()].count]" },
           "subnet1Ref": { "value": "[variables('subnet1Ref')]" },
