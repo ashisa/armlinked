@@ -238,7 +238,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(deployment().templateLink.uri, 'avset.json')]",
+          "uri": "[uri(deployment().properties.templateLink.uri, 'avset.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
