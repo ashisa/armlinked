@@ -34,7 +34,7 @@
     }
   },
   "variables": {
-    "LBName": "concat(parameters('Name'),'intlb')",
+    "LBName": "[concat(parameters('Name'),'intlb')]",
     "LBID": "[resourceId('Microsoft.Network/loadBalancers', variables('LBName'))]",
     "LBPIPID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('Name'), '-pip'))]",
     "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
