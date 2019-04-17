@@ -12,12 +12,27 @@
     "WebLBType": {
       "type": "string",
       "allowedValues": [
-        "ext",
-        "int",
+        "external",
+        "internal",
         "none"
       ],
       "metadata": {
         "description": "Choose the type of LB needed"
+      }
+    },
+    "WebVMSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_F2",
+        "Standard_D2_v2",
+        "Standard_DS2_v2",
+        "Standard_D3_v2",
+        "Standard_DS3_v2",
+        "Standard_D11_v2",
+        "Standard_DS11_v2"
+      ],
+      "metadata": {
+        "description": "Choose the size of the Web VMs"
       }
     },
     "ApiSrvVMInstance": {
@@ -38,6 +53,21 @@
         "description": "Choose the type of LB needed"
       }
     },
+    "ApiSrvVMSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_F2",
+        "Standard_D2_v2",
+        "Standard_DS2_v2",
+        "Standard_D3_v2",
+        "Standard_DS3_v2",
+        "Standard_D11_v2",
+        "Standard_DS11_v2"
+      ],
+      "metadata": {
+        "description": "Choose the size of the ApiSrv VMs"
+      }
+    },
     "EmailVMInstance": {
       "type": "int",
       "defaultValue": 3,
@@ -48,12 +78,27 @@
     "EmailLBType": {
       "type": "string",
       "allowedValues": [
-        "ext",
-        "int",
+        "external",
+        "internal",
         "none"
       ],
       "metadata": {
         "description": "Choose the type of LB needed"
+      }
+    },
+    "EmailVMSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_F2",
+        "Standard_D2_v2",
+        "Standard_DS2_v2",
+        "Standard_D3_v2",
+        "Standard_DS3_v2",
+        "Standard_D11_v2",
+        "Standard_DS11_v2"
+      ],
+      "metadata": {
+        "description": "Choose the size of the Email VMs"
       }
     },
     "MongoVMInstance": {
@@ -66,12 +111,27 @@
     "MongoLBType": {
       "type": "string",
       "allowedValues": [
-        "ext",
-        "int",
+        "external",
+        "internal",
         "none"
       ],
       "metadata": {
         "description": "Choose the type of LB needed"
+      }
+    },
+    "MongoVMSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_F2",
+        "Standard_D2_v2",
+        "Standard_DS2_v2",
+        "Standard_D3_v2",
+        "Standard_DS3_v2",
+        "Standard_D11_v2",
+        "Standard_DS11_v2"
+      ],
+      "metadata": {
+        "description": "Choose the size of the Mongo VMs"
       }
     },
     "VNetName": {
@@ -99,7 +159,7 @@
       {
         "condition": "[greater(parameters('WebVMInstance'),0)]",
         "prefix": "web",
-        "size": "standard_ds2_v2",
+        "size": "[parameters('WebVMSize')]",
         "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
         "lbtype": "[parameters('WebLBType')]",
         "location": "[parameters('Location')]",
@@ -108,7 +168,7 @@
       {
         "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
         "prefix": "apisrv",
-        "size": "standard_ds2_v2",
+        "size": "[parameters('ApiSrvVMSize')]",
         "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
         "lbtype": "[parameters('ApiSrvLBType')]",
         "location": "[parameters('Location')]",
@@ -117,7 +177,7 @@
       {
         "condition": "[greater(parameters('EmailVMInstance'),0)]",
         "prefix": "email",
-        "size": "standard_ds2_v2",
+        "size": "[parameters('EmailVMSize')]",
         "count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('EmailVMInstance'))]",
         "lbtype": "[parameters('EmailLBType')]",
         "location": "[parameters('Location')]",
@@ -126,7 +186,7 @@
       {
         "condition": "[greater(parameters('MongoVMInstance'),0)]",
         "prefix": "mongo",
-        "size": "standard_ds2_v2",
+        "size": "[parameters('MongoVMSize')]",
         "count": "[if(equals(parameters('MongoVMInstance'), 0), 1, parameters('MongoVMInstance'))]",
         "lbtype": "[parameters('MongoLBType')]",
         "location": "[parameters('Location')]",
