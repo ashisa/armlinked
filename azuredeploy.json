@@ -59,7 +59,7 @@
         "prefix": "apisrv",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
-        "lbtype": "ext",
+        "lbtype": "none",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       },
@@ -72,36 +72,7 @@
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       }
-    ],
-    "webVMProperty": {
-      "Condition": "[greater(parameters('WebVMInstance'),0)]",
-      "VMPrefix": "webvm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2",
-      "LBName": "weblb",
-      "LBType": "ext",
-      "LBID": "[resourceId('Microsoft.Network/loadBalancers', 'weblb')]",
-      "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', 'weblb'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
-      "LBPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', 'weblb'),'/backendAddressPools/BackendPool1')]",
-      "LBProbeID": "[concat(resourceId('Microsoft.Network/loadBalancers', 'weblb'),'/probes/tcpProbe')]",
-      "LBIPType": "Dynamic",
-      "LBPIPID": "[resourceId('Microsoft.Network/publicIPAddresses', 'weblb-pip')]"
-    },
-    "apisrvVMProperty": {
-      "Condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
-      "VMPrefix": "apisrvvm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
-    },
-    "emailVMProperty": {
-      "Condition": "[greater(parameters('EmailVMInstance'),0)]",
-      "VMPrefix": "emailvm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
-    }
+    ]
   },
   "resources": [
     {
