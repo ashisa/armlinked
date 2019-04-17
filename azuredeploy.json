@@ -81,33 +81,31 @@
     "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),variables('subnet1Name'))]",
     "VMProperties": [
       {
-        "web": {
-          "condition": "[greater(parameters('WebVMInstance'),0)]",
-          "prefix": "web",
-          "size": "standard_ds2_v2",
-          "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-          "lbtype": "ext",
-          "location": "[parameters('Location')]",
-          "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
-        },
-        "apisrv": {
-          "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
-          "prefix": "web",
-          "size": "standard_ds2_v2",
-          "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
-          "lbtype": "ext",
-          "location": "[parameters('Location')]",
-          "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
-        },
-        "mongo": {
-          "condition": "[greater(parameters('WebVMInstance'),0)]",
-          "prefix": "web",
-          "size": "standard_ds2_v2",
-          "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-          "lbtype": "ext",
-          "location": "[parameters('Location')]",
-          "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
-        }
+        "condition": "[greater(parameters('WebVMInstance'),0)]",
+        "prefix": "web",
+        "size": "standard_ds2_v2",
+        "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+        "lbtype": "ext",
+        "location": "[parameters('Location')]",
+        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+      },
+      {
+        "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
+        "prefix": "web",
+        "size": "standard_ds2_v2",
+        "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
+        "lbtype": "ext",
+        "location": "[parameters('Location')]",
+        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+      },
+      {
+        "condition": "[greater(parameters('WebVMInstance'),0)]",
+        "prefix": "web",
+        "size": "standard_ds2_v2",
+        "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
+        "lbtype": "ext",
+        "location": "[parameters('Location')]",
+        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       }
     ],
     "avSet": [
@@ -236,8 +234,8 @@
       "apiVersion": "2018-05-01",
       "name": "avset",
       "copy": {
-          "name": "avsetloop",
-          "count": "[length(variables('VMProperties'))]"
+        "name": "avsetloop",
+        "count": "[length(variables('VMProperties'))]"
       },
       "properties": {
         "mode": "Incremental",
