@@ -30,8 +30,8 @@
     "ApiSrvLBType": {
       "type": "string",
       "allowedValues": [
-        "ext",
-        "int",
+        "external",
+        "internal",
         "none"
       ],
       "metadata": {
@@ -188,7 +188,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/ashisa/armlinked/master/nic-', variables('VMProperties')[copyIndex()].lbtype, 'lb.json')]",
+          "uri": "[concat('https://raw.githubusercontent.com/ashisa/armlinked/master/nic-', variables('VMProperties')[copyIndex()].lbtype, '-lb.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -209,6 +209,9 @@
         "name": "vmloop",
         "count": "[length(variables('VMProperties'))]"
       },
+      "dependsOn": [
+        "[concat(variables('VMProperties')[copyIndex()].prefix, 'lb')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
