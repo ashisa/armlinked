@@ -1,0 +1,94 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Condition": {
+      "type": "bool",
+      "metadata": {
+        "description": "Boolean value indicating if the VM needs to be created"
+      }
+    },
+    "Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Prefix for the VM Names"
+      }
+    },
+    "Location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the VMs"
+      }
+    },
+    "Count": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VMs to be created"
+      }
+    },
+    "Size": {
+      "type": "string",
+      "metadata": {
+        "description": "Size of the VM"
+      }
+    },
+    "CloudInitData": {
+      "type": "string",
+      "metadata": {
+        "description": "Cloud Init directives for the VMs"
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "condition": "[parameters('Condition')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('Name'), copyIndex(1))]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "vmLoop",
+        "count": "[parameters('Count')]"
+      },
+      "dependsOn": [
+        "nicLoop"
+      ],
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('Name'), 'avset'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('Size')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('Name'), copyIndex(1))]",
+          "adminUsername": "[concat('vm', 'admin')]",
+          "adminPassword": "RestDifficult^3019",
+          "customData": "[base64(parameters('CloudInitData'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('Name'), 'nic', copyindex(1)))]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

@@ -200,6 +200,30 @@
           "Location": { "value": "[parameters('Location')]" }
         }
       }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(variables('VMProperties')[copyIndex()].prefix, 'vm')]",
+      "copy": {
+        "name": "vmloop",
+        "count": "[length(variables('VMProperties'))]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/ashisa/armlinked/master/vms.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "Condition": { "value": "[variables('VMProperties')[copyIndex()].condition]" },
+          "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
+          "Location": { "value": "[parameters('Location')]" },
+          "Count": { "value": "[variables('VMProperties')[copyIndex()].count]" },
+          "Size": { "value": "Standard_D2_V2" },
+          "CloudInitData": { "value": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]" }
+        }
+      }
     }
   ]
 }
