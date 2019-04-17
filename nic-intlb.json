@@ -1,0 +1,137 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the load balancer"
+      }
+    },
+    "Condition": {
+      "type": "bool",
+      "metadata": {
+        "description": "Set to True if LB needs to be created"
+      }
+    },
+    "Count": {
+      "type": "int",
+      "metadata": {
+        "description": "Same as number of VMs in the main template"
+      }
+    },
+    "subnet1Ref": {
+      "type": "string",
+      "metadata": {
+        "description": "Reference to the subnet"
+      }
+    },
+    "Location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the load balancer"
+      }
+    }
+  },
+  "variables": {
+    "LBID": "[resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb'))]",
+    "LBPIPID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('Name'), '-pip'))]",
+    "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+    "LBPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb')),'/backendAddressPools/BackendPool1')]",
+    "LBProbeID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(parameters('Name'),'lb')),'/probes/tcpProbe')]"
+  },
+  "resources": [
+    {
+      "condition": "[parameters('Condition')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('Name'), 'nic', copyindex(1))]",
+      "apiVersion": "2016-03-30",
+      "location": "[parameters('Location')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('Count')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', parameters('Name'), 'lb')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[parameters('subnet1Ref')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(variables('LBID'), '/backendAddressPools/BackendPool1')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[parameters('Condition')]",
+      "apiVersion": "2015-05-01-preview",
+      "name": "[concat(parameters('Name'),'intlb')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[parameters('Location')]",
+      "dependsOn": [
+        "[variables('LBPIPID')]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "BackendPool1"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "LBRule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('FrontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('LBPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('LBProbeID')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "tcpProbe",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
