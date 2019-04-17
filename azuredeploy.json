@@ -9,11 +9,33 @@
         "description": "Number of Web VMs to deploy"
       }
     },
+    "WebLBType": {
+      "type": "string",
+      "allowedValues": [
+        "ext",
+        "int",
+        "none"
+      ],
+      "metadata": {
+        "description": "Choose the type of LB needed"
+      }
+    },
     "ApiSrvVMInstance": {
       "type": "int",
       "defaultValue": 2,
       "metadata": {
         "description": "Number of ApiSrv VMs to deploy"
+      }
+    },
+    "ApiSrvLBType": {
+      "type": "string",
+      "allowedValues": [
+        "ext",
+        "int",
+        "none"
+      ],
+      "metadata": {
+        "description": "Choose the type of LB needed"
       }
     },
     "EmailVMInstance": {
@@ -23,11 +45,33 @@
         "description": "Number of Email Analytics VMs to deploy"
       }
     },
+    "EmailLBType": {
+      "type": "string",
+      "allowedValues": [
+        "ext",
+        "int",
+        "none"
+      ],
+      "metadata": {
+        "description": "Choose the type of LB needed"
+      }
+    },
     "MongoVMInstance": {
       "type": "int",
       "defaultValue": 0,
       "metadata": {
         "description": "Number of Mongo VMs to deploy"
+      }
+    },
+    "MongoLBType": {
+      "type": "string",
+      "allowedValues": [
+        "ext",
+        "int",
+        "none"
+      ],
+      "metadata": {
+        "description": "Choose the type of LB needed"
       }
     },
     "VNetName": {
@@ -57,7 +101,7 @@
         "prefix": "web",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-        "lbtype": "ext",
+        "lbtype": "[parameters('WebLBType')]",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       },
@@ -66,7 +110,7 @@
         "prefix": "apisrv",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
-        "lbtype": "none",
+        "lbtype": "[parameters('ApiSrvLBType')]",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       },
@@ -75,7 +119,7 @@
         "prefix": "email",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('EmailVMInstance'))]",
-        "lbtype": "int",
+        "lbtype": "[parameters('EmailLBType')]",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       },
@@ -84,7 +128,7 @@
         "prefix": "mongo",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('MongoVMInstance'), 0), 1, parameters('MongoVMInstance'))]",
-        "lbtype": "int",
+        "lbtype": "[parameters('MongoLBType')]",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
       }
