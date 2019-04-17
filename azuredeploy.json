@@ -270,7 +270,8 @@
         "count": "[length(variables('VMProperties'))]"
       },
       "dependsOn": [
-        "[concat(variables('VMProperties')[copyIndex()].prefix, 'lb')]"
+        "[concat(variables('VMProperties')[copyIndex()].prefix, 'lb')]",
+        "[concat(variables('VMProperties')[copyIndex()].prefix, 'av')]"
       ],
       "properties": {
         "mode": "Incremental",
