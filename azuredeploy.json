@@ -23,41 +23,6 @@
         "description": "Number of Email Analytics VMs to deploy"
       }
     },
-    "MongoVMInstance": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "Number of Mongo VMs to deploy"
-      }
-    },
-    "GraphVMInstance": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "Number of Graph VMs to deploy"
-      }
-    },
-    "MySQLVMInstance": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "Number of VMs to deploy"
-      }
-    },
-    "KafkaVMInstance": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "Number of Kafka VMs to deploy"
-      }
-    },
-    "ESVMInstance": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "Number of Elastic Search VMs to deploy"
-      }
-    },
     "VNetName": {
       "type": "string",
       "defaultValue": "vnet01",
@@ -103,43 +68,9 @@
         "prefix": "email",
         "size": "standard_ds2_v2",
         "count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('EmailVMInstance'))]",
-        "lbtype": "ext",
+        "lbtype": "int",
         "location": "[parameters('Location')]",
         "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
-      }
-    ],
-    "avSet": [
-      {
-        "Name": "webavset",
-        "Condition": "[greater(parameters('WebVMInstance'),0)]"
-      },
-      {
-        "Name": "apisrvavset",
-        "Condition": "[greater(parameters('ApiSrvVMInstance'),0)]"
-      },
-      {
-        "Name": "emailavset",
-        "Condition": "[greater(parameters('EmailVMInstance'),0)]"
-      },
-      {
-        "Name": "mongoavset",
-        "Condition": "[greater(parameters('MongoVMInstance'),0)]"
-      },
-      {
-        "Name": "graphavset",
-        "Condition": "[greater(parameters('GraphVMInstance'),0)]"
-      },
-      {
-        "Name": "kafkaavset",
-        "Condition": "[greater(parameters('KafkaVMInstance'),0)]"
-      },
-      {
-        "Name": "mysqlavset",
-        "Condition": "[greater(parameters('MySQLVMInstance'),0)]"
-      },
-      {
-        "Name": "esavset",
-        "Condition": "[greater(parameters('ESVMInstance'),0)]"
       }
     ],
     "webVMProperty": {
@@ -170,41 +101,6 @@
       "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
       "Count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('WebVMInstance'))]",
       "Size": "Standard_D2_V2"
-    },
-    "mongoVMProperty": {
-      "Condition": "[greater(parameters('MongoVMInstance'),0)]",
-      "VMPrefix": "mongovm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('MongoVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
-    },
-    "graphVMProperty": {
-      "Condition": "[greater(parameters('GraphVMInstance'),0)]",
-      "VMPrefix": "graphvm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('GraphVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
-    },
-    "mysqlVMProperty": {
-      "Condition": "[greater(parameters('MySQLVMInstance'),0)]",
-      "VMPrefix": "mysqlvm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('MySQLVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
-    },
-    "kafkaVMProperty": {
-      "Condition": "[greater(parameters('KafkaVMInstance'),0)]",
-      "VMPrefix": "kafkavm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('KafkaVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
-    },
-    "esVMProperty": {
-      "Condition": "[greater(parameters('ESVMInstance'),0)]",
-      "VMPrefix": "esvm",
-      "CloudInitData": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]",
-      "Count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
-      "Size": "Standard_D2_V2"
     }
   },
   "resources": [
@@ -232,7 +128,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "[variables('VMProperties')[copyIndex()].prefix]",
+      "name": "[concat(variables('VMProperties')[copyIndex()].prefix, 'av')]",
       "copy": {
         "name": "avsetloop",
         "count": "[length(variables('VMProperties'))]"
@@ -246,7 +142,30 @@
         "parameters": {
           "Condition": { "value": "[variables('VMProperties')[copyIndex()].condition]" },
           "Name": { "value": "[concat(variables('VMProperties')[copyIndex()].prefix, 'avset')]" },
-          "Location": { "value": "[variables('VMProperties')[copyIndex()].location]" }
+          "Location": { "value": "[parameters('Location')]" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(variables('VMProperties')[copyIndex()].prefix, 'lb')]",
+      "copy": {
+        "name": "lbloop",
+        "count": "[length(variables('VMProperties'))]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/ashisa/armlinked/master/nic-', variables('VMProperties')[copyIndex()].lbtype, 'lb.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "Condition": { "value": "[if(equals(variables('VMProperties')[copyIndex()].lbtype, 'none'), bool('false'), bool('true'))]" },
+          "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
+          "Count": { "value": "[variables('VMProperties')[copyIndex()].count]" },
+          "subnet1Ref": { "value": "[variables('subnet1Ref')]" },
+          "Location": { "value": "[parameters('Location')]" }
         }
       }
     }
