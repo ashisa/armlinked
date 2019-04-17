@@ -1,0 +1,70 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the load balancer"
+      }
+    },
+    "Condition": {
+      "type": "bool",
+      "metadata": {
+        "description": "Set to True if LB needs to be created"
+      }
+    },
+    "Count": {
+      "type": "int",
+      "metadata": {
+        "description": "Same as number of VMs in the main template"
+      }
+    },
+    "subnet1Ref": {
+      "type": "string",
+      "metadata": {
+        "description": "Reference to the subnet"
+      }
+    },
+    "Location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the load balancer"
+      }
+    }
+  },
+  "variables": {
+  
+  },
+  "resources": [
+    {
+      "condition": "[parameters('Condition')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('Name'), 'nic', copyindex(1))]",
+      "apiVersion": "2016-03-30",
+      "location": "[parameters('Location')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('Count')]"
+      },
+      "dependsOn": [
+
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[parameters('subnet1Ref')]"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
