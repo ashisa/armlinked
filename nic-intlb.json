@@ -42,7 +42,6 @@
   "variables": {
     "LBName": "[concat(parameters('Name'), 'intlb')]",
     "LBID": "[resourceId('Microsoft.Network/loadBalancers', variables('LBName'))]",
-    "LBPIPID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('Name'), '-pip'))]",
     "FrontEndIPConfigID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
     "LBPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/backendAddressPools/BackendPool1')]",
     "LBProbeID": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LBName')),'/probes/tcpProbe')]"
