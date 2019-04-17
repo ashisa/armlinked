@@ -235,6 +235,10 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
       "name": "avset",
+      "copy": {
+          "name": "avsetloop",
+          "count": "[length(variables('VMProperties'))]"
+      },
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -245,10 +249,6 @@
           "Condition": { "value": "[variables('VMProperties')[copyIndex()].condition]" },
           "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
           "Location": { "value": "[variables('VMProperties')[copyIndex()].location]" }
-        },
-        "copy": {
-          "name": "avsetloop",
-          "count": "[length(variables('VMProperties'))]"
         }
       }
     }
