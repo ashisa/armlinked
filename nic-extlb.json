@@ -54,7 +54,7 @@
     {
       "condition": "[parameters('Condition')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('Condition'), 'nic', copyindex(1))]",
+      "name": "[concat(parameters('Name'), 'nic', copyindex(1))]",
       "apiVersion": "2016-03-30",
       "location": "[parameters('Location')]",
       "copy": {
