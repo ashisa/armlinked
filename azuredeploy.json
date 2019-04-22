@@ -11,6 +11,7 @@
     },
     "WebLBType": {
       "type": "string",
+      "defaultValue": "none",
       "allowedValues": [
         "external",
         "internal",
@@ -44,6 +45,7 @@
     },
     "ApiSrvLBType": {
       "type": "string",
+      "defaultValue": "none",
       "allowedValues": [
         "external",
         "internal",
@@ -77,6 +79,7 @@
     },
     "EmailLBType": {
       "type": "string",
+      "defaultValue": "none",
       "allowedValues": [
         "external",
         "internal",
@@ -110,6 +113,7 @@
     },
     "MongoLBType": {
       "type": "string",
+      "defaultValue": "none",
       "allowedValues": [
         "external",
         "internal",
