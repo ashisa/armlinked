@@ -163,7 +163,7 @@
         "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
         "lbtype": "[parameters('WebLBType')]",
         "location": "[parameters('Location')]",
-        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n', '#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.sh\n', 'runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.txt\n')]"
       },
       {
         "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
