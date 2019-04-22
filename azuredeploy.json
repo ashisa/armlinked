@@ -167,7 +167,7 @@
         "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
         "lbtype": "[parameters('WebLBType')]",
         "location": "[parameters('Location')]",
-        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.txt\n', '#cloud-config\n', 'package_upgrade: true\n', 'packages:\n', '  - nginx\n', '  - nodejs\n','  - npm\n')]"
+        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.sh\n')]"
       },
       {
         "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
@@ -176,7 +176,7 @@
         "count": "[if(equals(parameters('ApiSrvVMInstance'), 0), 1, parameters('ApiSrvVMInstance'))]",
         "lbtype": "[parameters('ApiSrvLBType')]",
         "location": "[parameters('Location')]",
-        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.sh\n')]"
       },
       {
         "condition": "[greater(parameters('EmailVMInstance'),0)]",
@@ -185,7 +185,7 @@
         "count": "[if(equals(parameters('EmailVMInstance'), 0), 1, parameters('EmailVMInstance'))]",
         "lbtype": "[parameters('EmailLBType')]",
         "location": "[parameters('Location')]",
-        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.sh\n')]"
       },
       {
         "condition": "[greater(parameters('MongoVMInstance'),0)]",
@@ -194,7 +194,7 @@
         "count": "[if(equals(parameters('MongoVMInstance'), 0), 1, parameters('MongoVMInstance'))]",
         "lbtype": "[parameters('MongoLBType')]",
         "location": "[parameters('Location')]",
-        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]"
+        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.sh\n')]"
       }
     ]
   },
