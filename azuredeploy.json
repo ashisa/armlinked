@@ -167,7 +167,7 @@
         "count": "[if(equals(parameters('WebVMInstance'), 0), 1, parameters('WebVMInstance'))]",
         "lbtype": "[parameters('WebLBType')]",
         "location": "[parameters('Location')]",
-        "cloudinitdata": "[concat('#cloud-config\n', 'package_upgrade: true\n', 'packages:\n', '  - nginx\n', '  - nodejs\n','  - npm\n', '#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.txt\n')]"
+        "cloudinitdata": "[concat('#include\n', 'https://raw.githubusercontent.com/ashisa/armlinked/master/web.txt\n', '#cloud-config\n', 'package_upgrade: true\n', 'packages:\n', '  - nginx\n', '  - nodejs\n','  - npm\n')]"
       },
       {
         "condition": "[greater(parameters('ApiSrvVMInstance'),0)]",
