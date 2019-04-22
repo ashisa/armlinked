@@ -284,8 +284,8 @@
           "Name": { "value": "[variables('VMProperties')[copyIndex()].prefix]" },
           "Location": { "value": "[parameters('Location')]" },
           "Count": { "value": "[variables('VMProperties')[copyIndex()].count]" },
-          "Size": { "value": "Standard_D2_V2" },
-          "CloudInitData": { "value": "[concat('#cloud-config\n', 'package_upgrade: true\n','packages:\n','  - nginx\n','  - nodejs\n','  - npm\n','runcmd:\n','  - apt-get install mysql-server -y\n')]" }
+          "Size": { "value": "[variables('VMProperties')[copyIndex()].size]" },
+          "CloudInitData": { "value": "[variables('VMProperties')[copyIndex()].cloudinitdata]" }
         }
       }
     }
